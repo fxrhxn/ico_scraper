@@ -65,7 +65,7 @@ app.get('/api/ico/all', function(req,res){
 
 
 //PORT tht we will listen on.
-var PORT = 3000;
+var PORT = process.env.PORT || 3000;
 
 
 //Start the application.
