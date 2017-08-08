@@ -8,12 +8,24 @@ var moment = require('moment')
 // All of the ico's out there.
 app.get('/api/ico/all', function(req,res){
 
+
   //Main function that builds the fucking crawler.
   var ICO_Crawler = new crawler({
     maxConnections : 10,
     callback : function(err, resp, done){
       if(err){
-        console.log(err)
+
+
+        //Error response to send.
+        var error_response = {
+          success : false,
+          message : 'Failed to get the data.',
+        }
+
+        //Send the error response.
+        res.send(error_response)
+
+        done()
       }else{
 
         //Scrape shit using Cheerio.
@@ -21,6 +33,8 @@ app.get('/api/ico/all', function(req,res){
 
         //HTML to find to extract data.
         var htmlfinder_titles = 'div.ico-wrap div.ico'
+
+        //You need to find the links to the site. There should be a better way to get the hrefs.
         var htmlfinder_links = 'div.ico-links'
 
 
@@ -28,7 +42,10 @@ app.get('/api/ico/all', function(req,res){
         var Titles = $(htmlfinder_titles).text();
         var Urls = $(htmlfinder_links).attr('href');
 
+
+        //Print out the URLs that come in.
         console.log(Urls)
+
         //Split the titles of the ICO up.
         var Split_Titles = Titles.split('\n')
 
@@ -51,9 +68,10 @@ app.get('/api/ico/all', function(req,res){
         //Send out the data object.
         res.send(ICO_DATA)
 
+        done()
       }
 
-      done()
+
     }
   })
 
@@ -62,7 +80,22 @@ app.get('/api/ico/all', function(req,res){
 
 })
 
+app.get('/api/spec-file', (req,res) => {
 
+    // Swagger documentation.
+    var swagger_doc = {
+    "swaggerVersion": "1.2",
+    "apis": [
+      {
+        "path": "http://icoapp.herokuapp.com/api/ico/all",
+        "description": "Generating ICO's for the application."
+      }
+    ]
+  }
+
+  res.send(swagger_doc)
+
+})
 
 //PORT tht we will listen on.
 var PORT = process.env.PORT || 3000;
@@ -232,6 +265,7 @@ METHODS
 
 Well here is the current problem, I am getting the titles of the cryptos, but I am not getting anything interesting like the images or the URLs.
 The goal is to scrape these websites and get a shit ton of data. So I should just aggregate data from a website that is more simpler and better. Maybe my current source is not good enough. Yeah, I will have to change the method.
+
 
 
 */
